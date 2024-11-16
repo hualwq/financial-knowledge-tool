@@ -1,25 +1,76 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from '../views/HomeView.vue';
+import AddNode from '../views/AddNode.vue';
+import Login from '../views/Login_neo4j.vue';
+import QueryNode from '@/views/QueryNode.vue';
+import DeleteNode from '@/views/DeleteNode.vue';
+import QueryRelationship from '@/views/QueryRelationship.vue';
+import test from '@/views/test_code.vue'
+import AllGraph from '@/views/AllGraph.vue';
 
 const routes = [
   {
-    path: '/',
+    path: '/home',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta:{
+      requireAuth: true
+    }
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
-]
+    path: '/',
+    redirect: '/login'
+  },
+  {
+    path: '/addnode',
+    name: 'addnode',
+    component: AddNode,
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login,
+  },
+  {
+    path: '/querynode',
+    name: 'querynode',
+    component: QueryNode
+  },
+  {
+    path: '/deletenode',
+    name: 'deletenode',
+    component: DeleteNode
+  },
+  {
+    path: '/queryrelationship',
+    name: 'queryrelationship',
+    component: QueryRelationship
+  },
+  {
+    path: '/test',
+    name: 'test',
+    component: test
+  },
+  {
+    path: '/allgraph',
+    name: 'allgraph',
+    component: AllGraph
+  },
+];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  history: createWebHistory(),
+  routes,
+});
 
-export default router
+// 路由守卫
+router.beforeEach((to, from, next) => {
+  let token = localStorage.getItem('token');//获取token
+  if (token || to.path === '/login') {//有token或者在login页面下通行
+    next();
+  } else {
+    alert('无权访问');
+    next('/login');
+  }
+})
+export default router;
